@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Averaging Down Calculator (INR)</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .calculator-card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            width: 100%;
+            max-width: 450px;
+        }
+        h2 {
+            margin-top: 0;
+            color: #1e293b;
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        .input-group {
+            margin-bottom: 16px;
+        }
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: #475569;
+            font-size: 14px;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 16px;
+            color: #334155;
+        }
+        input:focus {
+            outline: none;
+            border-color: #059669;
+            box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1);
+        }
+        button {
+            width: 100%;
+            background-color: #059669;
+            color: white;
+            border: none;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background-color 0.2s;
+        }
+        button:hover {
+            background-color: #047857;
+        }
+        .results-section {
+            margin-top: 24px;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 20px;
+        }
+        .result-box {
+            background-color: #f8fafc;
+            border-left: 4px solid #059669;
+            padding: 12px;
+            margin-bottom: 12px;
+            border-radius: 0 6px 6px 0;
+        }
+        .status-box {
+            background-color: #fff5f5;
+            border-left: 4px solid #dc2626;
+            padding: 12px;
+            margin-bottom: 16px;
+            border-radius: 0 6px 6px 0;
+        }
+        .result-title {
+            font-weight: bold;
+            color: #1e293b;
+            margin-bottom: 4px;
+            font-size: 15px;
+        }
+        .result-value {
+            font-size: 14px;
+            color: #475569;
+            line-height: 1.4;
+        }
+        .highlight {
+            color: #059669;
+            font-weight: bold;
+        }
+        .highlight-danger {
+            color: #dc2626;
+            font-weight: bold;
+        }
+        .error {
+            color: #dc2626;
+            background-color: #fef2f2;
+            border-left-color: #dc2626;
+        }
+    </style>
+</head>
+<body>
+
+<div class="calculator-card">
+    <h2>Averaging Down Calculator</h2>
+    
+    <div class="input-group">
+        <label for="currentQty">Current Quantity</label>
+        <input type="number" id="currentQty" placeholder="e.g., 100" min="1">
+    </div>
+    
+    <div class="input-group">
+        <label for="avgPrice">Average Buy Price (₹)</label>
+        <input type="number" id="avgPrice" placeholder="e.g., 150" step="0.01" min="0">
+    </div>
+    
+    <div class="input-group">
+        <label for="currentPrice">Current Market Price (₹)</label>
+        <input type="number" id="currentPrice" placeholder="e.g., 100" step="0.01" min="0">
+    </div>
+
+    <div class="input-group">
+        <label for="customLoss">Your Target Max Loss (%)</label>
+        <input type="number" id="customLoss" placeholder="e.g., 2.5" step="0.1" min="0.1" max="99.9">
+    </div>
+    
+    <button onclick="calculateRequiredShares()">Calculate Shares Needed</button>
+    
+    <div class="results-section" id="results" style="display: none;">
+        <!-- Results will be injected here dynamically by JavaScript -->
+    </div>
+</div>
+
+<script>
+// Helper function to format numbers to Indian Currency Style (INR)
+function formatINR(number) {
+    return new Intl.NumberFormat('en-IN', {
+        style: 'currency',
+        currency: 'INR',
+        maximumFractionDigits: 2
+    }).format(number);
+}
+
+function calculateRequiredShares() {
+    // 1. Fetch values from input fields
+    const qCurrent = parseFloat(document.getElementById('currentQty').value);
+    const pAvg = parseFloat(document.getElementById('avgPrice').value);
+    const pCurrent = parseFloat(document.getElementById('currentPrice').value);
+    const customLossInput = parseFloat(document.getElementById('customLoss').value);
+    const resultsDiv = document.getElementById('results');
+
+    // 2. Validate core investment inputs
+    if (isNaN(qCurrent) || isNaN(pAvg) || isNaN(pCurrent) || qCurrent <= 0 || pAvg <= 0 || pCurrent <= 0) {
+        resultsDiv.style.display = 'block';
+        resultsDiv.innerHTML = `
+            <div class="result-box error">
+                <div class="result-title">Error</div>
+                <div class="result-value">Please enter valid positive numbers for quantity and price fields.</div>
+            </div>`;
+        return;
+    }
+
+    // 3. Check if stock is actually in a loss position
+    if (pCurrent >= pAvg) {
+        resultsDiv.style.display = 'block';
+        resultsDiv.innerHTML = `
+            <div class="result-box" style="border-left-color: #10b981;">
+                <div class="result-title">No Action Needed</div>
+                <div class="result-value">Your current market price is higher than or equal to your average buy price. You are not currently in a loss!</div>
+            </div>`;
+        return;
+    }
+
+    // 4. Calculate Current Status Metrics
+    const totalInvested = qCurrent * pAvg;
+    const currentHoldingValue = qCurrent * pCurrent;
+    const totalLossAmount = totalInvested - currentHoldingValue;
+    const currentLossPercent = (totalLossAmount / totalInvested) * 100;
+
+    // 5. Helper mathematical calculation function for targets
+    function getTargetOutput(targetLossPercent) {
+        if (isNaN(targetLossPercent) || targetLossPercent <= 0 || targetLossPercent >= 100) {
+            return null; 
+        }
+
+        // If the current portfolio loss is already lower than or equal to the target
+        if (currentLossPercent <= targetLossPercent) {
+            return `Target already achieved! Your current loss (${currentLossPercent.toFixed(2)}%) is less than or equal to your target.`;
+        }
+
+        const decimalLoss = targetLossPercent / 100;
+        const pTargetAvg = pCurrent / (1 - decimalLoss);
+        
+        const qRequired = (qCurrent * (pAvg - pTargetAvg)) / (pTargetAvg - pCurrent);
+        const finalShares = Math.ceil(qRequired);
+        const extraCapital = finalShares * pCurrent;
+
+        return `Buy <span class="highlight">${finalShares}</span> additional shares.<br>
+                Target Avg Price: <strong>${formatINR(pTargetAvg)}</strong><br>
+                Additional Capital Needed: <strong>${formatINR(extraCapital)}</strong>`;
+    }
+
+    // 6. Build dynamic HTML content
+    // Primary Header Card: Show Current State Metrics
+    let htmlContent = `
+        <div class="status-box">
+            <div class="result-title" style="color: #dc2626;">Current Status</div>
+            <div class="result-value">
+                Current Loss: <span class="highlight-danger">${currentLossPercent.toFixed(2)}%</span><br>
+                Total Capital Lost: <strong>${formatINR(totalLossAmount)}</strong><br>
+                Total Invested Value: <strong>${formatINR(totalInvested)}</strong>
+            </div>
+        </div>
+    `;
+
+    // Render custom loss output if provided
+    if (!isNaN(customLossInput)) {
+        const customOutput = getTargetOutput(customLossInput);
+        if (customOutput) {
+            htmlContent += `
+                <div class="result-box" style="border-left-color: #3b82f6;">
+                    <div class="result-title">To Limit Total Loss to Your Target (${customLossInput}%)</div>
+                    <div class="result-value">${customOutput}</div>
+                </div>`;
+        } else {
+            htmlContent += `
+                <div class="result-box error">
+                    <div class="result-title">Invalid Custom Target</div>
+                    <div class="result-value">Please input a custom loss target between 0.1% and 99.9%.</div>
+                </div>`;
+        }
+    }
+
+    // Always render standard 10% and 5% calculations underneath for comparison
+    const output10 = getTargetOutput(10);
+    const output5 = getTargetOutput(5);
+
+    htmlContent += `
+        <div class="result-box">
+            <div class="result-title">To Limit Total Loss to 10%</div>
+            <div class="result-value">${output10}</div>
+        </div>
+        <div class="result-box" style="border-left-color: #6366f1;">
+            <div class="result-title">To Limit Total Loss to 5%</div>
+            <div class="result-value">${output5}</div>
+        </div>
+    `;
+
+    // 7. Push final UI updates to DOM
+    resultsDiv.style.display = 'block';
+    resultsDiv.innerHTML = htmlContent;
+}
+</script>
+
+</body>
+</html>
