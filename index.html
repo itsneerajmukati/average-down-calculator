@@ -4,115 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Averaging Down Calculator (INR)</title>
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #f4f6f9;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-        .calculator-card {
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            width: 100%;
-            max-width: 450px;
-        }
-        h2 {
-            margin-top: 0;
-            color: #1e293b;
-            text-align: center;
-            margin-bottom: 24px;
-        }
-        .input-group {
-            margin-bottom: 16px;
-        }
-        label {
-            display: block;
-            margin-bottom: 6px;
-            font-weight: 600;
-            color: #475569;
-            font-size: 14px;
-        }
-        input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #cbd5e1;
-            border-radius: 6px;
-            box-sizing: border-box;
-            font-size: 16px;
-            color: #334155;
-        }
-        input:focus {
-            outline: none;
-            border-color: #059669;
-            box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1);
-        }
-        button {
-            width: 100%;
-            background-color: #059669;
-            color: white;
-            border: none;
-            padding: 12px;
-            font-size: 16px;
-            font-weight: 600;
-            border-radius: 6px;
-            cursor: pointer;
-            margin-top: 10px;
-            transition: background-color 0.2s;
-        }
-        button:hover {
-            background-color: #047857;
-        }
-        .results-section {
-            margin-top: 24px;
-            border-top: 1px solid #e2e8f0;
-            padding-top: 20px;
-        }
-        .result-box {
-            background-color: #f8fafc;
-            border-left: 4px solid #059669;
-            padding: 12px;
-            margin-bottom: 12px;
-            border-radius: 0 6px 6px 0;
-        }
-        .status-box {
-            background-color: #fff5f5;
-            border-left: 4px solid #dc2626;
-            padding: 12px;
-            margin-bottom: 16px;
-            border-radius: 0 6px 6px 0;
-        }
-        .result-title {
-            font-weight: bold;
-            color: #1e293b;
-            margin-bottom: 4px;
-            font-size: 15px;
-        }
-        .result-value {
-            font-size: 14px;
-            color: #475569;
-            line-height: 1.4;
-        }
-        .highlight {
-            color: #059669;
-            font-weight: bold;
-        }
-        .highlight-danger {
-            color: #dc2626;
-            font-weight: bold;
-        }
-        .error {
-            color: #dc2626;
-            background-color: #fef2f2;
-            border-left-color: #dc2626;
-        }
-    </style>
+    <!-- CSS STYLES WILL GO HERE -->
 </head>
 <body>
 
@@ -138,16 +30,145 @@
         <label for="customLoss">Your Target Max Loss (%)</label>
         <input type="number" id="customLoss" placeholder="e.g., 2.5" step="0.1" min="0.1" max="99.9">
     </div>
+
+    <div class="input-group">
+        <label for="addQty">Optional: Max Quantity You Can Add Today</label>
+        <input type="number" id="addQty" placeholder="e.g., 50" min="1">
+    </div>
     
     <button onclick="calculateRequiredShares()">Calculate Shares Needed</button>
     
     <div class="results-section" id="results" style="display: none;">
-        <!-- Results will be injected here dynamically by JavaScript -->
+        <!-- Results dynamically injected here -->
     </div>
 </div>
 
+<!-- JAVASCRIPT LOGIC WILL GO HERE -->
+
+</body>
+</html>
+<style>
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background-color: #f4f6f9;
+        margin: 0;
+        padding: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+    }
+    .calculator-card {
+        background: white;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        width: 100%;
+        max-width: 480px;
+    }
+    h2 {
+        margin-top: 0;
+        color: #1e293b;
+        text-align: center;
+        margin-bottom: 24px;
+    }
+    .input-group {
+        margin-bottom: 16px;
+    }
+    label {
+        display: block;
+        margin-bottom: 6px;
+        font-weight: 600;
+        color: #475569;
+        font-size: 14px;
+    }
+    input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        box-sizing: border-box;
+        font-size: 16px;
+        color: #334155;
+    }
+    input:focus {
+        outline: none;
+        border-color: #059669;
+        box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1);
+    }
+    button {
+        width: 100%;
+        background-color: #059669;
+        color: white;
+        border: none;
+        padding: 12px;
+        font-size: 16px;
+        font-weight: 600;
+        border-radius: 6px;
+        cursor: pointer;
+        margin-top: 10px;
+        transition: background-color 0.2s;
+    }
+    button:hover {
+        background-color: #047857;
+    }
+    .results-section {
+        margin-top: 24px;
+        border-top: 1px solid #e2e8f0;
+        padding-top: 20px;
+    }
+    .result-box {
+        background-color: #f8fafc;
+        border-left: 4px solid #059669;
+        padding: 12px;
+        margin-bottom: 12px;
+        border-radius: 0 6px 6px 0;
+    }
+    .status-box {
+        background-color: #fff5f5;
+        border-left: 4px solid #dc2626;
+        padding: 12px;
+        margin-bottom: 16px;
+        border-radius: 0 6px 6px 0;
+    }
+    .simulation-box {
+        background-color: #f0fdf4;
+        border-left: 4px solid #16a34a;
+        padding: 12px;
+        margin-bottom: 16px;
+        border-radius: 0 6px 6px 0;
+    }
+    .result-title {
+        font-weight: bold;
+        color: #1e293b;
+        margin-bottom: 4px;
+        font-size: 15px;
+    }
+    .result-value {
+        font-size: 14px;
+        color: #475569;
+        line-height: 1.4;
+    }
+    .highlight {
+        color: #059669;
+        font-weight: bold;
+    }
+    .highlight-danger {
+        color: #dc2626;
+        font-weight: bold;
+    }
+    .error {
+        color: #dc2626;
+        background-color: #fef2f2;
+        border-left-color: #dc2626;
+    }
+    hr {
+        border: 0;
+        border-top: 1px dashed #cbd5e1;
+        margin: 15px 0 10px 0;
+    }
+</style>
 <script>
-// Helper function to format numbers to Indian Currency Style (INR)
 function formatINR(number) {
     return new Intl.NumberFormat('en-IN', {
         style: 'currency',
@@ -157,14 +178,13 @@ function formatINR(number) {
 }
 
 function calculateRequiredShares() {
-    // 1. Fetch values from input fields
     const qCurrent = parseFloat(document.getElementById('currentQty').value);
     const pAvg = parseFloat(document.getElementById('avgPrice').value);
     const pCurrent = parseFloat(document.getElementById('currentPrice').value);
     const customLossInput = parseFloat(document.getElementById('customLoss').value);
+    const addQtyInput = parseFloat(document.getElementById('addQty').value);
     const resultsDiv = document.getElementById('results');
 
-    // 2. Validate core investment inputs
     if (isNaN(qCurrent) || isNaN(pAvg) || isNaN(pCurrent) || qCurrent <= 0 || pAvg <= 0 || pCurrent <= 0) {
         resultsDiv.style.display = 'block';
         resultsDiv.innerHTML = `
@@ -175,7 +195,6 @@ function calculateRequiredShares() {
         return;
     }
 
-    // 3. Check if stock is actually in a loss position
     if (pCurrent >= pAvg) {
         resultsDiv.style.display = 'block';
         resultsDiv.innerHTML = `
@@ -186,26 +205,20 @@ function calculateRequiredShares() {
         return;
     }
 
-    // 4. Calculate Current Status Metrics
     const totalInvested = qCurrent * pAvg;
     const currentHoldingValue = qCurrent * pCurrent;
     const totalLossAmount = totalInvested - currentHoldingValue;
     const currentLossPercent = (totalLossAmount / totalInvested) * 100;
 
-    // 5. Helper mathematical calculation function for targets
     function getTargetOutput(targetLossPercent) {
         if (isNaN(targetLossPercent) || targetLossPercent <= 0 || targetLossPercent >= 100) {
             return null; 
         }
-
-        // If the current portfolio loss is already lower than or equal to the target
         if (currentLossPercent <= targetLossPercent) {
             return `Target already achieved! Your current loss (${currentLossPercent.toFixed(2)}%) is less than or equal to your target.`;
         }
-
         const decimalLoss = targetLossPercent / 100;
         const pTargetAvg = pCurrent / (1 - decimalLoss);
-        
         const qRequired = (qCurrent * (pAvg - pTargetAvg)) / (pTargetAvg - pCurrent);
         const finalShares = Math.ceil(qRequired);
         const extraCapital = finalShares * pCurrent;
@@ -215,8 +228,6 @@ function calculateRequiredShares() {
                 Additional Capital Needed: <strong>${formatINR(extraCapital)}</strong>`;
     }
 
-    // 6. Build dynamic HTML content
-    // Primary Header Card: Show Current State Metrics
     let htmlContent = `
         <div class="status-box">
             <div class="result-title" style="color: #dc2626;">Current Status</div>
@@ -228,7 +239,30 @@ function calculateRequiredShares() {
         </div>
     `;
 
-    // Render custom loss output if provided
+    if (!isNaN(addQtyInput) && addQtyInput > 0) {
+        const simCapitalNeeded = addQtyInput * pCurrent;
+        const simTotalInvested = totalInvested + simCapitalNeeded;
+        const simTotalQty = qCurrent + addQtyInput;
+        const simNewAvgPrice = simTotalInvested / simTotalQty;
+        const simNewHoldingValue = simTotalQty * pCurrent;
+        const simNewLossAmount = simTotalInvested - simNewHoldingValue;
+        const simNewLossPercent = (simNewLossAmount / simTotalInvested) * 100;
+
+        htmlContent += `
+            <div class="simulation-box">
+                <div class="result-title" style="color: #16a34a;">If You Buy ${addQtyInput} Shares Today</div>
+                <div class="result-value">
+                    New Portfolio Loss: <span class="highlight" style="color: #16a34a;">${simNewLossPercent.toFixed(2)}%</span><br>
+                    New Average Buy Price: <strong>${formatINR(simNewAvgPrice)}</strong><br>
+                    Capital Needed Today: <strong>${formatINR(simCapitalNeeded)}</strong><br>
+                    New Total Invested Value: <strong>${formatINR(simTotalInvested)}</strong>
+                </div>
+            </div>
+        `;
+    }
+
+    htmlContent += `<hr><div style="font-weight: bold; font-size:13px; color:#64748b; margin-bottom:10px; text-transform: uppercase; letter-spacing: 0.5px;">Target Projections:</div>`;
+
     if (!isNaN(customLossInput)) {
         const customOutput = getTargetOutput(customLossInput);
         if (customOutput) {
@@ -246,7 +280,6 @@ function calculateRequiredShares() {
         }
     }
 
-    // Always render standard 10% and 5% calculations underneath for comparison
     const output10 = getTargetOutput(10);
     const output5 = getTargetOutput(5);
 
@@ -261,11 +294,7 @@ function calculateRequiredShares() {
         </div>
     `;
 
-    // 7. Push final UI updates to DOM
     resultsDiv.style.display = 'block';
     resultsDiv.innerHTML = htmlContent;
 }
 </script>
-
-</body>
-</html>
